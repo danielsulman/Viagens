@@ -19,8 +19,35 @@ class Mapa: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate{
         super.viewDidLoad()
         
         configuraGerenciadorLocalizacao()
-    }
     
+        //Reconhecendo o toque na tela
+        //: significa que será passado um parametro
+        let reconheceGesto = UILongPressGestureRecognizer(target: self, action: #selector(Mapa.marcar(gesture:)))
+        reconheceGesto.minimumPressDuration = 2 //Tempo em segundo
+        
+        map.addGestureRecognizer(reconheceGesto)
+        
+    }
+    //O parametro passado contém as informações sobre o local pressionado
+    func marcar(gesture: UIGestureRecognizer){
+        //Captura exatamente quando se inicia o toque sobre a tela
+        if gesture.state == UIGestureRecognizerState.began{
+            let pontoSelecionado = gesture.location(in: self.map)
+            let coordenadas = map.convert(pontoSelecionado, toCoordinateFrom: self.map)
+            
+            //Exibe anotacao com os dados do endereco
+            let anotacao = MKPointAnnotation()
+            
+            anotacao.coordinate.latitude = coordenadas.latitude
+            anotacao.coordinate.longitude = coordenadas.longitude
+            anotacao.title = "Pressionei aqui"
+            anotacao.subtitle = "Estou aqui"
+            
+            map.addAnnotation(anotacao)
+            
+        }
+        
+    }
     func configuraGerenciadorLocalizacao(){
         gerenciadorLocalizacao.delegate = self
         gerenciadorLocalizacao.desiredAccuracy = kCLLocationAccuracyBest
