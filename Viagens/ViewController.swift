@@ -10,13 +10,21 @@ import UIKit
 
 class ViewController: UITableViewController {
     
-    let dados: [String] = ["daniel", "teste"]
+    var locaisViagens: [Dictionary<String,String>] = []
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        
+        
     }
-
+    
+    override func viewDidAppear(_ animated: Bool) {
+        locaisViagens = ArmazenamentoDados().listarViagens()
+        tableView.reloadData()
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -27,15 +35,15 @@ class ViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return dados.count
+        return locaisViagens.count
     }
     
-   
+    //Removendo itens da tabela
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: "cell")
         
-        cell?.textLabel?.text = dados[indexPath.row]
+        cell?.textLabel?.text = locaisViagens[indexPath.row]["local"]
         
         return cell!
     }
