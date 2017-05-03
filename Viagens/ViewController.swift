@@ -21,8 +21,7 @@ class ViewController: UITableViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        locaisViagens = ArmazenamentoDados().listarViagens()
-        tableView.reloadData()
+        atualizarViagens()
     }
     
     override func didReceiveMemoryWarning() {
@@ -39,6 +38,22 @@ class ViewController: UITableViewController {
     }
     
     //Removendo itens da tabela
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        
+        if editingStyle == UITableViewCellEditingStyle.delete{
+            
+            ArmazenamentoDados().removerViagem(indice: indexPath.row)
+            atualizarViagens()
+            
+        }
+        
+    }
+    
+    func atualizarViagens(){
+        locaisViagens = ArmazenamentoDados().listarViagens()
+        tableView.reloadData()
+    }
+    
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: "cell")
