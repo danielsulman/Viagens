@@ -11,22 +11,16 @@ import UIKit
 class ViewController: UITableViewController {
     
     var locaisViagens: [Dictionary<String,String>] = []
+    var controleNavegacao : String = "adicionar"
 
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
-        
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        controleNavegacao = "adicionar"
         atualizarViagens()
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -41,12 +35,15 @@ class ViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         
         if editingStyle == UITableViewCellEditingStyle.delete{
-            
             ArmazenamentoDados().removerViagem(indice: indexPath.row)
             atualizarViagens()
-            
         }
         
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        controleNavegacao = "listar"
+        performSegue(withIdentifier: "map", sender: indexPath.row)
     }
     
     func atualizarViagens(){
@@ -62,6 +59,28 @@ class ViewController: UITableViewController {
         
         return cell!
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "map"{
+            let viewControllerDestino = segue.destination as! Mapa
+            
+            if self.controleNavegacao == "listar"{
+                if let indiceRecuperado = sender{
+                    let indice = indiceRecuperado as! Int
+                    viewControllerDestino.viagem = locaisViagens[indice]
+                    viewControllerDestino.indiceSelecionado = indice
+                }   
+            }else{
+                viewControllerDestino.viagem = [:]
+                viewControllerDestino.indiceSelecionado = -1
+            }
+            
+            if let indiceRecuperado = sender{
+                
+            }
+            
+        }
 
+    }
 }
 

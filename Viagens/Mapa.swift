@@ -15,12 +15,21 @@ class Mapa: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate{
     @IBOutlet weak var map: MKMapView!
     var gerenciadorLocalizacao = CLLocationManager()
     var viagem : Dictionary<String,String> = [:]
+    var indiceSelecionado : Int!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        configuraGerenciadorLocalizacao()
-    
+        if let indice = indiceSelecionado {
+            //adicionando
+            if indice == -1{
+                configuraGerenciadorLocalizacao()
+            //listando
+            } else{
+                exibirAnotacao(viagem: viagem)
+            }
+        }
+
         //Reconhecendo o toque na tela
         //: significa que será passado um parametro
         let reconheceGesto = UILongPressGestureRecognizer(target: self, action: #selector(Mapa.marcar(gesture:)))
@@ -54,26 +63,55 @@ class Mapa: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate{
                     self.viagem = ["local": localCompleto, "latitude": String(coordenadas.latitude), "longitude": String(coordenadas.longitude)]
                     ArmazenamentoDados().salvarViagem(viagem: self.viagem)
                     print(ArmazenamentoDados().listarViagens())
-                    
-                    //Exibe anotacao com os dados do endereco
-                    let anotacao = MKPointAnnotation()
-                    
-                    anotacao.coordinate.latitude = coordenadas.latitude
-                    anotacao.coordinate.longitude = coordenadas.longitude
-                    anotacao.title = localCompleto
-
-                    
-                    self.map.addAnnotation(anotacao)
-                    
                 }else{
-                    print(erro)
+                    print(erro!)
                 }
             })
-            
-            
-            
+        }
+    }
+    
+    func exibirAnotacao(viagem : Dictionary<String,String>){
+        //Exibe anotacao com os dados do endereco
+        if let localViagem = viagem["local"]{
+            if let longitudeS = viagem["longitude"] {
+                if let latitudeS = viagem["latitude"]{
+                    if let latitude = Double(latitudeS){
+                        if let longitude = Double(longitudeS){
+                            
+                            //Exibe o local
+                            let localizacao = CLLocationCoordinate2DMake(latitude, longitude)
+                            let span: MKCoordinateSpan = MKCoordinateSpanMake(0.01, 0.01)
+                            let regiao: MKCoordinateRegion = MKCoordinateRegionMake(localizacao, span)
+                            
+                            self.map.setRegion(regiao, animated: true)
+                            
+                            //Adiciona anotacao
+                            let anotacao = MKPointAnnotation()
+                            
+                            anotacao.coordinate.latitude = latitude
+                            anotacao.coordinate.longitude = longitude
+                            anotacao.title = localViagem
+                            
+                            self.map.addAnnotation(anotacao)
+                        }
+                    }
+                    
+                }
+            }
         }
         
+        
+    }
+    func salvarAnotacao(latitude: CLLocationDegrees, longitude: CLLocationDegrees, titutlo: String!){
+        //Exibe anotacao com os dados do endereco
+        let anotacao = MKPointAnnotation()
+        
+        anotacao.coordinate.latitude = latitude
+        anotacao.coordinate.longitude = longitude
+        anotacao.title = titutlo
+        
+        
+        self.map.addAnnotation(anotacao)
     }
     func configuraGerenciadorLocalizacao(){
         gerenciadorLocalizacao.delegate = self
