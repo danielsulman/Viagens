@@ -58,6 +58,13 @@ class Mapa: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate{
                                 localCompleto = endereco
                             }
                         }
+                        //Adiciona anotacao
+                        let anotacao = MKPointAnnotation()
+                        
+                        anotacao.coordinate.latitude = localizacao.coordinate.latitude
+                        anotacao.coordinate.longitude = localizacao.coordinate.longitude
+                        anotacao.title = localCompleto
+                        self.map.addAnnotation(anotacao)
                     }
                     //Salvar dados no dispositivo
                     self.viagem = ["local": localCompleto, "latitude": String(coordenadas.latitude), "longitude": String(coordenadas.longitude)]
